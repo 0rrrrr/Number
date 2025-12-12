@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>正整数频率统计工具</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 900px;
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(to right, #3a7bd5, #00d2ff);
+            color: white;
+            padding: 25px 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.4rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .header h1 i {
+            font-size: 2.2rem;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .content {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 0;
+        }
+        
+        .input-section {
+            flex: 1;
+            min-width: 300px;
+            padding: 30px;
+            border-right: 1px solid #eee;
+        }
+        
+        .output-section {
+            flex: 1;
+            min-width: 300px;
+            padding: 30px;
+            background-color: #f9f9f9;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #3a7bd5;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-title i {
+            font-size: 1.3rem;
+        }
+        
+        textarea {
+            width: 100%;
+            height: 200px;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            resize: vertical;
+            transition: border-color 0.3s;
+            line-height: 1.5;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #3a7bd5;
+        }
+        
+        .examples {
+            background-color: #f0f7ff;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            border-left: 4px solid #3a7bd5;
+        }
+        
+        .examples h3 {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            color: #3a7bd5;
+        }
+        
+        .examples p {
+            font-size: 0.95rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .examples .example-text {
+            font-family: monospace;
+            background-color: #e6f0ff;
+            padding: 8px;
+            border-radius: 5px;
+            margin-top: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .important-note {
+            background-color: #fff5e6;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            border-left: 4px solid #ff9800;
+        }
+        
+        .important-note h3 {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            color: #ff9800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .important-note p {
+            font-size: 0.95rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex: 1;
+            min-width: 150px;
+        }
+        
+        #calculate-btn {
+            background: linear-gradient(to right, #3a7bd5, #00d2ff);
+            color: white;
+        }
+        
+        #clear-btn {
+            background-color: #f8f9fa;
+            color: #666;
+            border: 1px solid #ddd;
+        }
+        
+        #calculate-btn:hover {
+            background: linear-gradient(to right, #2a6bc4, #00c2f0);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 210, 255, 0.3);
+        }
+        
+        #clear-btn:hover {
+            background-color: #e9ecef;
+            transform: translateY(-2px);
+        }
+        
+        .output-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            height: 350px;
+            overflow-y: auto;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
+            border: 1px solid #eee;
+        }
+        
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s;
+            border-left: 4px solid #3a7bd5;
+        }
+        
+        .result-item:hover {
+            transform: translateX(5px);
+            background-color: #f8fbff;
+        }
+        
+        .result-item.high-frequency {
+            border-left-color: #ff6b6b;
+            background-color: #fff5f5;
+        }
+        
+        .result-item.medium-frequency {
+            border-left-color: #ffd166;
+            background-color: #fffcf2;
+        }
+        
+        .result-number {
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: #3a7bd5;
+        }
+        
+        .result-count {
+            font-weight: 600;
+            color: #666;
+            background-color: #f0f7ff;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .empty-result {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #aaa;
+            text-align: center;
+        }
+        
+        .empty-result i {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+        
+        .statistics {
+            display: flex;
+            justify-content: space-between;
+            background: linear-gradient(to right, #f8fbff, #f0f7ff);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #3a7bd5;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        @media (max-width: 768px) {
+            .content {
+                flex-direction: column;
+            }
+            
+            .input-section {
+                border-right: none;
+                border-bottom: 1px solid #eee;
+            }
+            
+            button {
+                min-width: 100%;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #777;
+            font-size: 0.9rem;
+            border-top: 1px solid #eee;
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-chart-bar"></i> 正整数频率统计工具</h1>
+            <p>输入多组正整数，支持各种分隔符（如逗号、空格、点、减号等），自动处理前导零</p>
+        </div>
+        
+        <div class="content">
+            <div class="input-section">
+                <h2 class="section-title"><i class="fas fa-keyboard"></i> 输入正整数</h2>
+                <textarea id="number-input" placeholder="请输入正整数，支持多种分隔符：
+例如：
+01,02,03.04-05 06,07.08,09
+10-20-30.40 50
+100.200 300-400,500"></textarea>
+                
+                
+                
+                <div class="buttons">
+                    <button id="calculate-btn">
+                        <i class="fas fa-calculator"></i> 统计频率
+                    </button>
+                    <button id="clear-btn">
+                        <i class="fas fa-eraser"></i> 清空输入
+                    </button>
+                </div>
+            </div>
+            
+            <div class="output-section">
+                <h2 class="section-title"><i class="fas fa-sort-amount-down"></i> 频率统计结果</h2>
+                <div class="output-container" id="result-container">
+                    <div class="empty-result">
+                        <i class="fas fa-chart-pie"></i>
+                        <p>输入正整数并点击"统计频率"按钮，结果将显示在这里</p>
+                        <p>格式：数字xx，出现次数xx</p>
+                    </div>
+                </div>
+                
+                <div class="statistics">
+                    <div class="stat-item">
+                        <div class="stat-value" id="total-numbers">0</div>
+                        <div class="stat-label">数字总数</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="unique-numbers">0</div>
+                        <div class="stat-label">唯一数字</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="max-frequency">0</div>
+                        <div class="stat-label">最高频率</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>正整数频率统计工具 &copy; 2023 | 支持任意分隔符，自动提取正整数并统计频率</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const numberInput = document.getElementById('number-input');
+            const calculateBtn = document.getElementById('calculate-btn');
+            const clearBtn = document.getElementById('clear-btn');
+            const resultContainer = document.getElementById('result-container');
+            const totalNumbersEl = document.getElementById('total-numbers');
+            const uniqueNumbersEl = document.getElementById('unique-numbers');
+            const maxFrequencyEl = document.getElementById('max-frequency');
+            
+            // 示例数据
+            const exampleData = ``;
+            
+            // 设置示例数据
+            numberInput.value = exampleData;
+            
+            // 统计频率
+            calculateBtn.addEventListener('click', function() {
+                const inputText = numberInput.value.trim();
+                
+                /*if (!inputText) {
+                    alert('请输入一些正整数！');
+                    return;
+                }*/
+                
+                // 使用正则表达式提取所有正整数
+                // 匹配一个或多个连续的数字（忽略负号）
+                const numberMatches = inputText.match(/\d+/g);
+                
+                /*if (!numberMatches || numberMatches.length === 0) {
+                    alert('未找到有效的正整数！请确保输入中包含数字。');
+                    return;
+                }*/
+                
+                // 转换为数字（自动处理前导零）
+                const numbers = numberMatches.map(num => parseInt(num, 10));
+                const frequencyMap = {};
+                
+                numbers.forEach(num => {
+                    frequencyMap[num] = (frequencyMap[num] || 0) + 1;
+                });
+                
+                // 转换为数组并按频率排序（频率相同则按数字大小排序）
+                const frequencyArray = Object.entries(frequencyMap).map(([num, count]) => ({
+                    number: parseInt(num, 10),
+                    count: count
+                }));
+                
+                // 排序：先按频率降序，再按数字升序
+                frequencyArray.sort((a, b) => {
+                    if (b.count !== a.count) {
+                        return b.count - a.count;
+                    }
+                    return a.number - b.number;
+                });
+                
+                // 更新统计信息
+                totalNumbersEl.textContent = numbers.length;
+                uniqueNumbersEl.textContent = frequencyArray.length;
+                maxFrequencyEl.textContent = frequencyArray.length > 0 ? frequencyArray[0].count : 0;
+                
+                // 清空结果容器
+                resultContainer.innerHTML = '';
+                
+                if (frequencyArray.length === 0) {
+                    resultContainer.innerHTML = `
+                        <div class="empty-result">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <p>未找到有效的正整数！</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // 找到最高频率用于样式分类
+                const maxCount = frequencyArray[0].count;
+                
+                // 生成结果HTML
+                frequencyArray.forEach(item => {
+                    const resultItem = document.createElement('div');
+                    resultItem.className = 'result-item';
+                    
+                    // 根据频率设置不同的样式类
+                    if (item.count === maxCount) {
+                        resultItem.classList.add('high-frequency');
+                    } else if (item.count >= maxCount / 2) {
+                        resultItem.classList.add('medium-frequency');
+                    }
+                    
+                    resultItem.innerHTML = `
+                        <div class="result-info">
+                            <div class="result-number">数字 ${item.number}</div>
+                        </div>
+                        <div class="result-count">出现次数 ${item.count}</div>
+                    `;
+                    
+                    resultContainer.appendChild(resultItem);
+                });
+            });
+            
+            // 清空输入
+            clearBtn.addEventListener('click', function() {
+                numberInput.value = '';
+                resultContainer.innerHTML = `
+                    <div class="empty-result">
+                        <i class="fas fa-chart-pie"></i>
+                        <p>输入正整数并点击"统计频率"按钮，结果将显示在这里</p>
+                        <p>格式：数字xx，出现次数xx</p>
+                    </div>
+                `;
+                
+                // 重置统计信息
+                totalNumbersEl.textContent = '0';
+                uniqueNumbersEl.textContent = '0';
+                maxFrequencyEl.textContent = '0';
+            });
+            
+            // 初始加载时显示示例数据的统计结果
+            calculateBtn.click();
+        });
+    </script>
+</body>
+</html>
